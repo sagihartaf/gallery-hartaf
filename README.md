@@ -101,6 +101,6 @@ The site shows the canvas only. Frames, walls, and studio floors have been cropp
 
 On an artwork page, **On a wall** places the canvas at its size in centimetres beside a bench of 200 cm and a figure of 170 cm.
 
-Studio photographs on About are cropped to the artist and the painting, then given a light, warm, soft grade. The untouched files are in `originals/studio/`. The artist statement lives in `src/content/artist-statement.ts`. A studio film appears on About only when a file is added at `src/assets/studio/studio.mp4` or `studio.webm`.
+Studio photographs on About are cropped to the artist and the painting, then given a soft, warm, slightly desaturated grade: gentle diffusion, a light vignette, and deeper shadows. The untouched files are in `originals/studio/`. The artist statement lives in `src/content/artist-statement.ts`. A studio film appears on About only when a file is added at `src/assets/studio/studio.mp4` or `studio.webm`.
 
 A few originals are small, so those paintings look soft when the browser enlarges them. To replace one, keep the filename `image.jpg` in that painting’s folder and swap the file. Astro generates the responsive sizes at build time.

@@ -1141,6 +1141,15 @@ figcaption,
 @media (min-width: 900px) {
   .about-pair {
     grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.8fr);
+    align-items: start;
+  }
+
+  .about-copy {
+    padding-top: clamp(1.4rem, 4vw, 3.2rem);
+  }
+
+  .about-pair:not(.is-flip) .about-copy {
+    padding-right: 8rem;
   }
 
   .about-pair.is-flip {
