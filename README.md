@@ -103,4 +103,6 @@ With that set, the build emits a sitemap and absolute canonical and Open Graph U
 
 ## Photographs
 
-The pictures shipped with the site are the family originals, including frames and studio walls. A few of those files are small, and they will look soft when the browser enlarges them. To replace one, keep the filename `image.jpg` in that painting’s folder and swap the file. Astro generates the responsive sizes at build time.
+The site shows the canvas only. Frames, walls, and studio floors have been cropped out, with the perspective straightened where the photograph was taken at an angle. The untouched photographs are in `originals/artworks/`. The cropped files the site uses are `src/assets/artworks/{slug}/image.jpg`. Studio photographs on the About page are left as they were taken.
+
+A few originals are small, so those paintings look soft when the browser enlarges them. To replace one, keep the filename `image.jpg` in that painting’s folder and swap the file. Astro generates the responsive sizes at build time.

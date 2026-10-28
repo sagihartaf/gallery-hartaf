@@ -14,7 +14,7 @@ const label = active ? seriesLabel(active) : null;
 ---
 
 <div class="page">
-  <h1 class="page-title">{label ?? 'Works'}</h1>
+  <h1 class="page-title reveal">{label ?? 'Works'}</h1>
   <nav aria-label="Series">
     <ul class="filters">
       <li>
@@ -43,6 +43,7 @@ const label = active ? seriesLabel(active) : null;
           work={work}
           sizes="(min-width: 1120px) 28vw, (min-width: 740px) 44vw, 92vw"
           priority={index < 2}
+          delay={index % 3}
         />
       ))}
     </div>

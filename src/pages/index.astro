@@ -16,16 +16,18 @@ const description =
 <Base title="Gallery Hartaf" description={description} ogImage={hero?.data.image as ImageMetadata | undefined}>
   {hero ? (
     <section class="page hero">
-      <a class="hero-link" href={workPath(hero)}>
-        <Image
-          src={hero.data.image}
-          alt=""
-          widths={[640, 960, 1280, 1800]}
-          sizes="(min-width: 900px) 72vw, 92vw"
-          class="hero-img"
-          transition:name={`work-${hero.id}`}
-          priority
-        />
+      <a class="hero-link" data-hero href={workPath(hero)}>
+        <span class="hero-stage" data-parallax>
+          <Image
+            src={hero.data.image}
+            alt=""
+            widths={[640, 960, 1280, 1800, 2400]}
+            sizes="(min-width: 900px) 92vw, 94vw"
+            class="hero-img"
+            transition:name={`work-${hero.id}`}
+            priority
+          />
+        </span>
         <span class="hero-label">
           <span class="hero-title">{hero.data.title}</span>
           <span class="hero-meta">{hero.data.medium}, {hero.data.size}</span>
@@ -38,19 +40,20 @@ const description =
     </div>
   )}
 
-  <section class="page lede">
+  <section class="page lede reveal">
     <p>Paintings by Shmuel Hartaf, from a studio in southern Israel.</p>
     <a href="/about">About the artist</a>
   </section>
 
   {selected.length > 0 && (
     <section class="page section" aria-labelledby="selected-heading">
-      <h2 class="section-title" id="selected-heading">Selected works</h2>
+      <h2 class="section-title reveal" id="selected-heading">Selected works</h2>
       <div class="hang hang-home">
-        {selected.map((work) => (
+        {selected.map((work, index) => (
           <WorkCard
             work={work}
-            sizes="(min-width: 1120px) 44vw, (min-width: 740px) 46vw, 92vw"
+            sizes="(min-width: 1120px) 46vw, (min-width: 740px) 46vw, 92vw"
+            delay={index % 2}
           />
         ))}
       </div>

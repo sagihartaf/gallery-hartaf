@@ -8,7 +8,7 @@
   --serif: "Cormorant Garamond", "Iowan Old Style", Palatino, "Palatino Linotype", serif;
   --sans: Jost, "Avenir Next", "Segoe UI", sans-serif;
   --gutter: clamp(1.15rem, 3vw, 2.5rem);
-  --frame: 1360px;
+  --frame: 1520px;
   --header: 4.6rem;
   color-scheme: light;
 }
@@ -243,15 +243,23 @@ a {
 }
 
 .hero {
-  padding-top: clamp(1.15rem, 2.5vw, 2rem);
+  padding-top: clamp(0.75rem, 2vw, 1.35rem);
 }
 
 .hero-link {
   display: grid;
-  justify-items: start;
+  justify-items: center;
   max-width: 100%;
   color: inherit;
   text-decoration: none;
+}
+
+.hero-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: calc(100svh - var(--header) - 8.5rem);
 }
 
 .hero-img {
@@ -259,14 +267,16 @@ a {
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: min(72svh, 820px);
+  max-height: calc(100svh - var(--header) - 9rem);
 }
 
 .hero-label {
   display: grid;
+  justify-items: center;
+  text-align: center;
   gap: 0.2rem;
-  margin-top: 0.85rem;
-  max-width: 36rem;
+  margin-top: 1rem;
+  max-width: 40rem;
 }
 
 .hero-title {
@@ -342,7 +352,14 @@ figcaption,
   min-width: 0;
 }
 
-.card-img {
+.media {
+  display: block;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.card-img,
+.work-img {
   display: block;
   width: 100%;
   height: auto;
@@ -402,7 +419,8 @@ figcaption,
   margin: 0;
 }
 
-.work-figure img {
+.work-figure img,
+.work-img {
   display: block;
   width: 100%;
   height: auto;
@@ -603,8 +621,8 @@ figcaption,
 
 @media (min-width: 900px) {
   .work-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(16.5rem, 22rem);
-    gap: clamp(2rem, 4vw, 4.25rem);
+    grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 20.5rem);
+    gap: clamp(2rem, 4vw, 4.5rem);
     align-items: start;
   }
 
@@ -614,7 +632,7 @@ figcaption,
   }
 }
 
-@media (min-width: 1120px) {
+@media (min-width: 1320px) {
   .hang {
     columns: 3;
   }
@@ -624,16 +642,102 @@ figcaption,
   }
 }
 
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .card-img,
+  .hero-img {
+    transition: transform 1.05s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .card:hover .card-img,
+  .card:focus-visible .card-img {
+    transform: scale(1.035);
+  }
+
+  .hero-link.is-settled:hover .hero-img,
+  .hero-link.is-settled:focus-visible .hero-img {
+    transform: scale(1.018);
+  }
+
+  .filters a,
+  .nav a,
+  .footer-nav a {
+    transition: color 240ms ease;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  ::view-transition-old(root),
+  ::view-transition-old(root) {
+    animation: 680ms cubic-bezier(0.4, 0, 0.2, 1) both fade-out;
+  }
+
   ::view-transition-new(root) {
-    animation-duration: 280ms;
+    animation: 760ms cubic-bezier(0.22, 1, 0.36, 1) both fade-in;
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: 780ms;
     animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal.arm {
+    opacity: 0;
+    transform: translate3d(0, 1.35rem, 0);
+  }
+
+  .reveal.arm.is-shown {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 1.05s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--d, 0) * 80ms);
+  }
+
+  html.motion .hero-link:not(.is-settled) .hero-img {
+    transform: scale(1.04);
+  }
+
+  .hero-link.is-settled .hero-img {
+    transform: none;
+    transition: transform 1.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hero-link.is-settled .hero-label {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.9s ease 0.18s,
+      transform 1s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+  }
+
+  .hero-link.is-entering:not(.is-settled) .hero-label {
+    transform: translate3d(0, 0.8rem, 0);
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .enquire {
+  .enquire,
+  .card-img,
+  .hero-img,
+  .filters a,
+  .nav a {
     transition: none;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
   }
 }

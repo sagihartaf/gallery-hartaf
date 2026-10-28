@@ -7,22 +7,25 @@ interface Props {
   work: Work;
   sizes: string;
   priority?: boolean;
+  delay?: number;
 }
 
-const { work, sizes, priority = false } = Astro.props;
+const { work, sizes, priority = false, delay = 0 } = Astro.props;
 const label = `${work.data.medium}, ${work.data.size}`;
 ---
 
-<a class="card" href={workPath(work)}>
-  <Image
-    src={work.data.image}
-    alt=""
-    widths={[480, 720, 960, 1280, 1600]}
-    sizes={sizes}
-    class="card-img"
-    transition:name={`work-${work.id}`}
-    priority={priority}
-  />
+<a class="card reveal" href={workPath(work)} style={`--d: ${delay}`}>
+  <span class="media">
+    <Image
+      src={work.data.image}
+      alt=""
+      widths={[480, 720, 960, 1280, 1600]}
+      sizes={sizes}
+      class="card-img"
+      transition:name={`work-${work.id}`}
+      priority={priority}
+    />
+  </span>
   <span class="card-text">
     <span class="card-title">{work.data.title}</span>
     <span class="card-meta">{label}</span>

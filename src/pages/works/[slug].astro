@@ -33,16 +33,19 @@ const description = `${work.data.title}. ${work.data.medium}, ${work.data.size}.
   <article class="page">
     <div class="work-layout">
       <figure class="work-figure">
-        <Image
-          src={work.data.image}
-          alt={`${work.data.title}, ${work.data.medium}`}
-          widths={[640, 960, 1280, 1800, 2200]}
-          sizes="(min-width: 900px) 62vw, 92vw"
-          transition:name={`work-${work.id}`}
-          priority
-        />
+        <span class="media work-frame" data-parallax>
+          <Image
+            src={work.data.image}
+            alt={`${work.data.title}, ${work.data.medium}`}
+            widths={[640, 960, 1280, 1800, 2400]}
+            sizes="(min-width: 900px) 68vw, 94vw"
+            class="work-img"
+            transition:name={`work-${work.id}`}
+            priority
+          />
+        </span>
       </figure>
-      <div class="work-meta">
+      <div class="work-meta reveal">
         <h1 class="work-title">{work.data.title}</h1>
         <dl class="specs">
           <div>
