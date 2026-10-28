@@ -17,12 +17,13 @@ The site is at [http://127.0.0.1:4387](http://127.0.0.1:4387).
 
 | Path | Page |
 | --- | --- |
-| `/` | Home: one large painting, then a short selection |
-| `/works` | Every painting, at its true proportion |
-| `/works/series/machines` | Series filter. Also `ports`, `cities`, `abstract`, `portrait` |
-| `/works/bmw-engine` | One painting, with the previous and the next |
-| `/about` | A short note, and photographs of the studio |
-| `/contact` | Email |
+| `/` | Home: a full-screen slider of every painting, then a short selection |
+| `/paintings` | Every painting, with the series filters |
+| `/paintings/series/machines` | Series filter. Also `ports`, `cities`, `abstract`, `portrait` |
+| `/objects`, `/furniture`, `/food` | Those categories. Empty until works are added |
+| `/works/bmw-engine` | One work, with the previous and the next |
+| `/about` | The artist, a statement, and the studio |
+| `/contact` | Email and WhatsApp |
 | `/keystatic` | Admin, only while `npm run dev` is running |
 
 ```sh
@@ -42,7 +43,7 @@ There are no prices on the site. Leave them out of the text.
 2. Open [http://127.0.0.1:4387/keystatic](http://127.0.0.1:4387/keystatic).
 3. Open **Artworks**, then **Add**.
 4. Fill in the title, medium, size, series, and sort order, and upload a photograph of the whole painting.
-5. Tick **Show on the home page** to include it in Selected works. Tick **Use as the home page hero** for the large painting at the top. Keep a single hero.
+5. Choose a **Category**: Paintings, Objects, Furniture, or Food. For a painting, also choose a series. Tick **Show on the home page** to include a painting in Selected works. Tick **Use for the home share image** for the picture used when the home page is shared. Keep a single share image.
 6. Save.
 
 The form writes:
@@ -60,6 +61,7 @@ Create `src/content/artworks/my-painting.yaml`:
 title: "My Painting"
 medium: "Oil on canvas"
 size: "80 × 120 cm"
+category: paintings
 series: abstract
 featured: false
 hero: false
@@ -69,40 +71,36 @@ image: ../../assets/artworks/my-painting/image.jpg
 
 Put the photograph at `src/assets/artworks/my-painting/image.jpg`. The path in the YAML has to stay in that shape, or the admin cannot find the file later.
 
-`series` is one of `machines`, `ports`, `cities`, `abstract`, `portrait`.
+`category` is one of `paintings`, `objects`, `furniture`, `food`.
 
-`order` is the sequence through the gallery. Lower numbers come first. Previous and next follow that order and wrap at the ends.
+`series` is one of `machines`, `ports`, `cities`, `abstract`, `portrait`. It filters Paintings. It is ignored for the other categories.
 
-`featured: true` places it on the home page. `hero: true` makes it the large painting there. Use one hero, and do not also mark that painting as featured.
+`order` is the sequence through the gallery. Lower numbers come first. Previous and next follow that order within the same category and wrap at the ends.
+
+`featured: true` places a painting in Selected works on the home page. `hero: true` chooses the painting on the home share image. Use one hero. The home slider already includes every painting.
 
 Keep the whole canvas in the photograph. The site does not crop.
 
 ## Contact
 
-Enquire opens the visitor’s mail app to `hartafgallery@gmail.com`. On an artwork page the subject is `Enquiry: {title}`. Elsewhere it is `Enquiry`.
+Enquire opens the visitor’s mail app to `zoreffhartaf@gmail.com`. On an artwork page the subject is `Enquiry: {title}`. Elsewhere it is `Enquiry`.
 
-WhatsApp is ready and stays hidden until a number is set. In `src/lib/contact.ts`, set `whatsapp` to digits only, with no plus sign:
-
-```ts
-whatsapp: '972501234567',
-```
-
-It then appears on Contact and beside Enquire on each painting.
+WhatsApp uses `054 707 3333` (`https://wa.me/972547073333`). A small button sits at the corner of every page. On a work, the message is `Hello, I'm interested in "{title}"`. The same link sits beside Enquire. Contact lists the number as well.
 
 ## Deploy on Netlify
 
 `netlify.toml` already sets the build command to `npm run build`, the publish directory to `dist`, and Node to 22.
 
-In the Netlify site settings, add:
+The public site URL is `https://gallery-hartaf.netlify.app`. Set `SITE_URL` only if the domain changes. The build writes a sitemap, canonical links, and a 1200×630 share image for the home page and for every work.
 
-```
-SITE_URL=https://your-domain.example
-```
-
-With that set, the build emits a sitemap and absolute canonical and Open Graph URLs. Without it, the site still builds. Those absolute links are left out, so a preview deploy does not advertise `localhost`.
+`/works` redirects to `/paintings`. A series address such as `/works/series/machines` redirects to `/paintings/series/machines`. A single work stays at `/works/{slug}`.
 
 ## Photographs
 
-The site shows the canvas only. Frames, walls, and studio floors have been cropped out, with the perspective straightened where the photograph was taken at an angle. The untouched photographs are in `originals/artworks/`. The cropped files the site uses are `src/assets/artworks/{slug}/image.jpg`. Studio photographs on the About page are left as they were taken.
+The site shows the canvas only. Frames, walls, and studio floors have been cropped out, with the perspective straightened where the photograph was taken at an angle. The untouched photographs are in `originals/artworks/`. The cropped files the site uses are `src/assets/artworks/{slug}/image.jpg`.
+
+On an artwork page, **On a wall** places the canvas at its size in centimetres beside a bench of 200 cm and a figure of 170 cm.
+
+Studio photographs on About are cropped to the artist and the painting, then given a light, warm, soft grade. The untouched files are in `originals/studio/`. The artist statement lives in `src/content/artist-statement.ts`. A studio film appears on About only when a file is added at `src/assets/studio/studio.mp4` or `studio.webm`.
 
 A few originals are small, so those paintings look soft when the browser enlarges them. To replace one, keep the filename `image.jpg` in that painting’s folder and swap the file. Astro generates the responsive sizes at build time.

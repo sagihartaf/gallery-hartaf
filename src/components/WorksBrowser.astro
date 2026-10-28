@@ -8,22 +8,22 @@ interface Props {
 }
 
 const { active = null } = Astro.props;
-const works = await getWorks();
+const works = (await getWorks()).filter((work) => work.data.category === 'paintings');
 const visible = active ? works.filter((work) => work.data.series === active) : works;
 const label = active ? seriesLabel(active) : null;
 ---
 
 <div class="page">
-  <h1 class="page-title reveal">{label ?? 'Works'}</h1>
+  <h1 class="page-title reveal">{label ?? 'Paintings'}</h1>
   <nav aria-label="Series">
     <ul class="filters">
       <li>
-        <a href="/works" aria-current={active ? undefined : 'page'}>All</a>
+        <a href="/paintings" aria-current={active ? undefined : 'page'}>All</a>
       </li>
       {seriesList.map((series) => (
         <li>
           <a
-            href={`/works/series/${series.id}`}
+            href={`/paintings/series/${series.id}`}
             aria-current={active === series.id ? 'page' : undefined}
           >
             {series.label}

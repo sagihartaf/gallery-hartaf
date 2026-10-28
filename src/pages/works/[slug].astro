@@ -1,10 +1,15 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
+import WallView from '../../components/WallView.astro';
 import { getWorks, neighbours, workPath } from '../../lib/works';
+import { categoryLabel } from '../../lib/categories';
 import { seriesLabel } from '../../lib/series';
+import { canvasCentimetres } from '../../lib/dimensions';
 import { contactChannels, gallery } from '../../lib/contact';
+import { artworkJsonLd } from '../../lib/seo';
 
 export async function getStaticPaths() {
   const works = await getWorks();
@@ -18,33 +23,82 @@ if (!work) {
   throw new Error(`Missing artwork: ${slug}`);
 }
 
-const { prev, next } = neighbours(works, work.id);
+const { prev, next } = neighbours(
+  works.filter((entry) => entry.data.category === work.data.category),
+  work.id,
+);
 const channels = contactChannels(work.data.title);
 const email = channels.find((channel) => channel.id === 'email');
-const others = channels.filter((channel) => channel.id !== 'email');
-const description = `${work.data.title}. ${work.data.medium}, ${work.data.size}. A painting by Shmuel Hartaf.`;
+const whatsapp = channels.find((channel) => channel.id === 'whatsapp');
+const description = `${work.data.title}. ${work.data.medium}, ${work.data.size}. A work by Shmuel Hartaf.`;
+const cm = canvasCentimetres(work.data.size, work.data.image.width, work.data.image.height);
+const isPainting = work.data.category === 'paintings';
+const rendered = await getImage({ src: work.data.image, width: 1600, format: 'jpg' });
+const pageUrl = Astro.site ? new URL(workPath(work), Astro.site).href : workPath(work);
+const imageUrl = Astro.site ? new URL(rendered.src, Astro.site).href : rendered.src;
+const jsonLd = Astro.site
+  ? artworkJsonLd({
+      site: Astro.site,
+      name: work.data.title,
+      description,
+      medium: work.data.medium,
+      artform: categoryLabel(work.data.category),
+      url: pageUrl,
+      image: imageUrl,
+      size: cm,
+    })
+  : undefined;
 ---
 
 <Base
   title={`${work.data.title} — Gallery Hartaf`}
   description={description}
-  ogImage={work.data.image as ImageMetadata}
+  ogImage={`/og/${work.id}.jpg`}
+  ogAlt={`${work.data.title}, ${work.data.medium}`}
+  section={work.data.category}
+  whatsappTitle={work.data.title}
+  jsonLd={jsonLd}
 >
   <article class="page">
     <div class="work-layout">
-      <figure class="work-figure">
-        <span class="media work-frame" data-parallax>
-          <Image
-            src={work.data.image}
-            alt={`${work.data.title}, ${work.data.medium}`}
-            widths={[640, 960, 1280, 1800, 2400]}
-            sizes="(min-width: 900px) 68vw, 94vw"
-            class="work-img"
-            transition:name={`work-${work.id}`}
-            priority
-          />
-        </span>
-      </figure>
+      <div class="work-views">
+        {cm && (
+          <>
+            <input class="view-radio" type="radio" name="presentation" id="show-painting" checked />
+            <input class="view-radio" type="radio" name="presentation" id="show-wall" />
+            <div class="view-switch" role="radiogroup" aria-label="Presentation">
+              <label for="show-painting">The painting</label>
+              <label for="show-wall">On a wall</label>
+            </div>
+          </>
+        )}
+        <div class="view-panels">
+          <figure class="work-figure panel-painting">
+            <span class="media work-frame" data-parallax>
+              <Image
+                src={work.data.image}
+                alt={`${work.data.title}. ${work.data.medium}, ${work.data.size}.`}
+                widths={[640, 960, 1280, 1800, 2400]}
+                sizes="(min-width: 900px) 68vw, 94vw"
+                class="work-img"
+                transition:name={`work-${work.id}`}
+                priority
+              />
+            </span>
+          </figure>
+          {cm && (
+            <div class="panel-wall">
+              <WallView
+                src={work.data.image as ImageMetadata}
+                title={work.data.title}
+                widthCm={cm.width}
+                heightCm={cm.height}
+              />
+              <p class="wall-note">To scale. The bench is 200 cm wide. The figure is 170 cm.</p>
+            </div>
+          )}
+        </div>
+      </div>
       <div class="work-meta reveal">
         <h1 class="work-title">{work.data.title}</h1>
         <dl class="specs">
@@ -56,27 +110,35 @@ const description = `${work.data.title}. ${work.data.medium}, ${work.data.size}.
             <dt>Size</dt>
             <dd>{work.data.size}</dd>
           </div>
-          <div>
-            <dt>Series</dt>
-            <dd>
-              <a href={`/works/series/${work.data.series}`}>{seriesLabel(work.data.series)}</a>
-            </dd>
-          </div>
+          {isPainting && (
+            <div>
+              <dt>Series</dt>
+              <dd>
+                <a href={`/paintings/series/${work.data.series}`}>{seriesLabel(work.data.series)}</a>
+              </dd>
+            </div>
+          )}
+          {!isPainting && (
+            <div>
+              <dt>Category</dt>
+              <dd>
+                <a href={`/${work.data.category}`}>{categoryLabel(work.data.category)}</a>
+              </dd>
+            </div>
+          )}
         </dl>
-        {email && <a class="enquire" href={email.href}>Enquire</a>}
+        <div class="enquire-row">
+          {email && <a class="enquire" href={email.href}>Enquire</a>}
+          {whatsapp && (
+            <a class="wa-text" href={whatsapp.href} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          )}
+        </div>
         <p class="enquire-note">{gallery.email}</p>
-        {others.length > 0 && (
-          <ul class="other-channels">
-            {others.map((channel) => (
-              <li><a href={channel.href}>{channel.label}</a></li>
-            ))}
-          </ul>
-        )}
       </div>
     </div>
 
-    {prev && next && (
-      <nav class="walk" data-walk aria-label="Other paintings">
+    {prev && next && prev.id !== work.id && (
+      <nav class="walk" data-walk aria-label="Other works">
         <a href={workPath(prev)} data-prev>
           <span class="walk-kicker">Previous</span>
           <span class="walk-title">{prev.data.title}</span>

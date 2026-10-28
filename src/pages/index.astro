@@ -1,44 +1,25 @@
 ---
-import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
+import HeroSlider from '../components/HeroSlider.astro';
 import WorkCard from '../components/WorkCard.astro';
-import { getWorks, workPath } from '../lib/works';
-import type { ImageMetadata } from 'astro';
+import { getByCategory } from '../lib/works';
+import { homeJsonLd } from '../lib/seo';
 
-const works = await getWorks();
-const heroes = works.filter((work) => work.data.hero);
-const hero = heroes[0] ?? works[0];
-const selected = works.filter((work) => work.data.featured && work.id !== hero?.id);
+const paintings = await getByCategory('paintings');
+const selected = paintings.filter((work) => work.data.featured);
 const description =
   'Paintings by Shmuel Hartaf. Oil, acrylic, and mixed media from a studio in southern Israel.';
+const jsonLd = Astro.site ? homeJsonLd(Astro.site, description) : undefined;
 ---
 
-<Base title="Gallery Hartaf" description={description} ogImage={hero?.data.image as ImageMetadata | undefined}>
-  {hero ? (
-    <section class="page hero">
-      <a class="hero-link" data-hero href={workPath(hero)}>
-        <span class="hero-stage" data-parallax>
-          <Image
-            src={hero.data.image}
-            alt=""
-            widths={[640, 960, 1280, 1800, 2400]}
-            sizes="(min-width: 900px) 92vw, 94vw"
-            class="hero-img"
-            transition:name={`work-${hero.id}`}
-            priority
-          />
-        </span>
-        <span class="hero-label">
-          <span class="hero-title">{hero.data.title}</span>
-          <span class="hero-meta">{hero.data.medium}, {hero.data.size}</span>
-        </span>
-      </a>
-    </section>
-  ) : (
-    <div class="page">
-      <p class="empty">No paintings yet.</p>
-    </div>
-  )}
+<Base
+  title="Gallery Hartaf — Paintings by Shmuel Hartaf"
+  description={description}
+  ogImage="/og/home.jpg"
+  ogAlt="Gallery Hartaf, paintings by Shmuel Hartaf"
+  jsonLd={jsonLd}
+>
+  <HeroSlider works={paintings} />
 
   <section class="page lede reveal">
     <p>Paintings by Shmuel Hartaf, from a studio in southern Israel.</p>
@@ -57,7 +38,7 @@ const description =
           />
         ))}
       </div>
-      <p class="more"><a href="/works">All works</a></p>
+      <p class="more"><a href="/paintings">All paintings</a></p>
     </section>
   )}
 </Base>

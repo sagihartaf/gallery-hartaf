@@ -1,28 +1,31 @@
 ---
 import Base from '../layouts/Base.astro';
-import { contactChannels, gallery } from '../lib/contact';
+import { contactChannels } from '../lib/contact';
 
 const channels = contactChannels();
-const description = 'Write to Gallery Hartaf about a painting. Email only, for now.';
+const description = 'Write or send a WhatsApp message to Gallery Hartaf about a painting.';
 ---
 
-<Base title="Contact — Gallery Hartaf" description={description}>
+<Base title="Contact — Gallery Hartaf" description={description} section="contact">
   <article class="page">
     <h1 class="page-title">Contact</h1>
     <div class="prose">
       <p>
-        For a painting, or a question about the work, write to the gallery.
-        Include the title if you have one.
+        For a painting, or a question about the work, write to the gallery
+        or send a WhatsApp message. Include the title if you have one.
       </p>
     </div>
     <ul class="channels">
       {channels.map((channel) => (
         <li>
+          <span class="channel-kicker">{channel.label}</span>
           <a
-            class={channel.id === 'email' ? 'channel-email' : 'channel-other'}
+            class="channel-email"
             href={channel.href}
+            target={channel.id === 'whatsapp' ? '_blank' : undefined}
+            rel={channel.id === 'whatsapp' ? 'noopener noreferrer' : undefined}
           >
-            {channel.id === 'email' ? gallery.email : channel.label}
+            {channel.value}
           </a>
         </li>
       ))}

@@ -1,23 +1,22 @@
 ---
-import Base from '../../../layouts/Base.astro';
-import WorksBrowser from '../../../components/WorksBrowser.astro';
-import { seriesList, seriesLabel, isSeries } from '../../../lib/series';
+import { seriesList } from '../../../lib/series';
 
 export function getStaticPaths() {
   return seriesList.map((series) => ({ params: { series: series.id } }));
 }
 
-const series = Astro.params.series ?? '';
-if (!isSeries(series)) {
-  throw new Error(`Unknown series: ${series}`);
-}
-
-const label = seriesLabel(series);
+const to = `/paintings/series/${Astro.params.series}`;
 ---
 
-<Base
-  title={`${label} — Gallery Hartaf`}
-  description={`Paintings by Shmuel Hartaf in ${label}.`}
->
-  <WorksBrowser active={series} />
-</Base>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Paintings</title>
+    <link rel="canonical" href={to} />
+    <meta http-equiv="refresh" content={`0;url=${to}`} />
+  </head>
+  <body>
+    <p><a href={to}>Paintings</a></p>
+  </body>
+</html>

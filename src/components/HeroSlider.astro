@@ -1,0 +1,295 @@
+---
+import { getImage } from 'astro:assets';
+import type { Work } from '../lib/works';
+import { workPath } from '../lib/works';
+
+interface Props {
+  works: Work[];
+}
+
+const { works } = Astro.props;
+const total = works.length;
+const slides = await Promise.all(
+  works.map(async (work) => {
+    const image = await getImage({
+      src: work.data.image,
+      widths: [960, 1400, 2000],
+      sizes: '(min-width: 900px) 82vw, 92vw',
+      format: 'webp',
+    });
+    return {
+      work,
+      src: image.src,
+      srcset: image.srcSet.attribute,
+      width: work.data.image.width,
+      height: work.data.image.height,
+    };
+  }),
+);
+---
+
+{slides.length > 0 ? (
+  <section class="stage" data-slider aria-roledescription="carousel" aria-label="Paintings">
+    <div class="stage-viewport">
+      {slides.map((slide, index) => {
+        const eager = index === 0 || index === 1 || index === slides.length - 1;
+        return (
+          <a
+            class:list={['slide', { 'is-active': index === 0 }]}
+            href={workPath(slide.work)}
+            aria-hidden={index === 0 ? 'false' : 'true'}
+            tabindex={index === 0 ? 0 : -1}
+            data-title={slide.work.data.title}
+            data-medium={slide.work.data.medium}
+          >
+            <span class="slide-canvas">
+              <img
+                class="slide-img"
+                alt=""
+                width={slide.width}
+                height={slide.height}
+                sizes="(min-width: 900px) 82vw, 92vw"
+                decoding="async"
+                src={eager ? slide.src : undefined}
+                srcset={eager ? slide.srcset : undefined}
+                data-src={slide.src}
+                data-srcset={slide.srcset}
+                fetchpriority={index === 0 ? 'high' : 'auto'}
+              />
+            </span>
+            <span class="slide-caption">
+              <span class="slide-title">{slide.work.data.title}</span>
+              <span class="slide-medium">{slide.work.data.medium}</span>
+            </span>
+          </a>
+        );
+      })}
+    </div>
+    <div class="stage-tools">
+      <button type="button" class="stage-arrow" data-prev aria-label="Previous painting">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M14.5 5.5 8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="1" />
+        </svg>
+      </button>
+      <p class="stage-count">
+        <span data-count>01</span>
+        <span class="stage-count-sep" aria-hidden="true">/</span>
+        <span class="visually-hidden">of</span>
+        <span>{String(total).padStart(2, '0')}</span>
+      </p>
+      <button type="button" class="stage-arrow" data-next aria-label="Next painting">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M9.5 5.5 16 12l-6.5 6.5" fill="none" stroke="currentColor" stroke-width="1" />
+        </svg>
+      </button>
+    </div>
+    <div class="stage-progress" aria-hidden="true"><span data-progress></span></div>
+    <p class="visually-hidden" data-live></p>
+  </section>
+) : (
+  <div class="page">
+    <p class="empty">No paintings yet.</p>
+  </div>
+)}
+
+<script>
+  const DURATION = 7600;
+  let cleanup = () => {};
+
+  function mount(root: HTMLElement) {
+    const slides = [...root.querySelectorAll<HTMLAnchorElement>('.slide')];
+    const count = slides.length;
+    if (!count) return () => {};
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const countEl = root.querySelector<HTMLElement>('[data-count]');
+    const bar = root.querySelector<HTMLElement>('[data-progress]');
+    const live = root.querySelector<HTMLElement>('[data-live]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-next]');
+    let index = slides.findIndex((slide) => slide.classList.contains('is-active'));
+    if (index < 0) index = 0;
+    let raf = 0;
+    let start = performance.now();
+    let elapsed = 0;
+    let paused = reduce;
+    let hovering = false;
+    let focused = false;
+    let hidden = document.hidden;
+    let suppressClick = false;
+    let touchX = 0;
+    let touchY = 0;
+
+    function arm(position: number) {
+      const slide = slides[(position + count) % count];
+      const img = slide?.querySelector('img');
+      if (!img || img.getAttribute('src')) {
+        img?.decode?.().catch(() => {});
+        return;
+      }
+      const src = img.dataset.src;
+      if (!src) return;
+      img.src = src;
+      if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+      img.decode?.().catch(() => {});
+    }
+
+    function paint(fraction: number) {
+      if (!bar) return;
+      bar.style.transform = `scaleX(${Math.max(0, Math.min(1, fraction))})`;
+    }
+
+    function show(nextIndex: number, fromUser: boolean) {
+      const previous = index;
+      index = (nextIndex + count) % count;
+      const leaving = slides[previous];
+      const entering = slides[index];
+      if (!leaving || !entering) return;
+      leaving.classList.remove('is-active');
+      leaving.classList.add('is-leaving');
+      leaving.setAttribute('aria-hidden', 'true');
+      leaving.tabIndex = -1;
+      entering.classList.remove('is-leaving');
+      entering.classList.add('is-active');
+      entering.setAttribute('aria-hidden', 'false');
+      entering.tabIndex = 0;
+      window.setTimeout(() => leaving.classList.remove('is-leaving'), 1500);
+      arm(index - 1);
+      arm(index);
+      arm(index + 1);
+      if (countEl) countEl.textContent = String(index + 1).padStart(2, '0');
+      if (fromUser && live) {
+        const title = entering.dataset.title ?? '';
+        const medium = entering.dataset.medium ?? '';
+        live.textContent = `${title}. ${medium}. ${index + 1} of ${count}.`;
+      }
+      elapsed = 0;
+      start = performance.now();
+      paint(reduce ? (index + 1) / count : 0);
+    }
+
+    function syncPause() {
+      const shouldPause = reduce || hovering || focused || hidden;
+      if (shouldPause && !paused) {
+        elapsed += performance.now() - start;
+        paused = true;
+        root.classList.add('is-paused');
+      } else if (!shouldPause && paused) {
+        paused = false;
+        start = performance.now();
+        root.classList.remove('is-paused');
+      }
+    }
+
+    function frame(now: number) {
+      if (!paused) {
+        const fraction = (elapsed + (now - start)) / DURATION;
+        if (fraction >= 1) show(index + 1, false);
+        else paint(fraction);
+      }
+      raf = requestAnimationFrame(frame);
+    }
+
+    function go(step: number) {
+      show(index + step, true);
+    }
+
+    const onPrev = () => go(-1);
+    const onNext = () => go(1);
+    const onEnter = () => {
+      if (!fine) return;
+      hovering = true;
+      syncPause();
+    };
+    const onLeave = () => {
+      hovering = false;
+      syncPause();
+    };
+    const onFocusIn = () => {
+      focused = true;
+      syncPause();
+    };
+    const onFocusOut = (event: FocusEvent) => {
+      if (event.relatedTarget instanceof Node && root.contains(event.relatedTarget)) return;
+      focused = false;
+      syncPause();
+    };
+    const onVisibility = () => {
+      hidden = document.hidden;
+      syncPause();
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      go(event.key === 'ArrowLeft' ? -1 : 1);
+    };
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) return;
+      touchX = event.touches[0]?.clientX ?? 0;
+      touchY = event.touches[0]?.clientY ?? 0;
+    };
+    const onTouchEnd = (event: TouchEvent) => {
+      const end = event.changedTouches[0];
+      if (!end) return;
+      const dx = end.clientX - touchX;
+      const dy = end.clientY - touchY;
+      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.15) return;
+      suppressClick = true;
+      go(dx < 0 ? 1 : -1);
+    };
+    const onClick = (event: MouseEvent) => {
+      if (!suppressClick) return;
+      const link = event.target instanceof Element ? event.target.closest('a') : null;
+      if (link && root.contains(link)) event.preventDefault();
+      suppressClick = false;
+    };
+
+    prev?.addEventListener('click', onPrev);
+    next?.addEventListener('click', onNext);
+    root.addEventListener('mouseenter', onEnter);
+    root.addEventListener('mouseleave', onLeave);
+    root.addEventListener('focusin', onFocusIn);
+    root.addEventListener('focusout', onFocusOut);
+    root.addEventListener('keydown', onKey);
+    root.addEventListener('touchstart', onTouchStart, { passive: true });
+    root.addEventListener('touchend', onTouchEnd, { passive: true });
+    root.addEventListener('click', onClick, true);
+    document.addEventListener('visibilitychange', onVisibility);
+
+    arm(0);
+    arm(1);
+    arm(count - 1);
+    if (reduce) {
+      root.classList.add('is-paused');
+      paint((index + 1) / count);
+    } else {
+      syncPause();
+      raf = requestAnimationFrame(frame);
+    }
+
+    return () => {
+      cancelAnimationFrame(raf);
+      prev?.removeEventListener('click', onPrev);
+      next?.removeEventListener('click', onNext);
+      root.removeEventListener('mouseenter', onEnter);
+      root.removeEventListener('mouseleave', onLeave);
+      root.removeEventListener('focusin', onFocusIn);
+      root.removeEventListener('focusout', onFocusOut);
+      root.removeEventListener('keydown', onKey);
+      root.removeEventListener('touchstart', onTouchStart);
+      root.removeEventListener('touchend', onTouchEnd);
+      root.removeEventListener('click', onClick, true);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }
+
+  function boot() {
+    cleanup();
+    const root = document.querySelector<HTMLElement>('[data-slider]');
+    cleanup = root ? mount(root) : () => {};
+  }
+
+  document.addEventListener('astro:page-load', boot);
+  document.addEventListener('astro:before-swap', () => cleanup());
+  boot();
+</script>

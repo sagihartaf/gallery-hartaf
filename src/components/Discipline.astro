@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import WorkCard from './WorkCard.astro';
+import { getByCategory } from '../lib/works';
+import type { CategoryId } from '../lib/categories';
+
+interface Props {
+  category: CategoryId;
+  title: string;
+  description: string;
+  lede: string;
+}
+
+const { category, title, description, lede } = Astro.props;
+const items = await getByCategory(category);
+---
+
+<Base title={`${title} — Gallery Hartaf`} description={description} section={category}>
+  <article class="page discipline">
+    {items.length === 0 ? (
+      <>
+        <p class="kicker">New works in preparation</p>
+        <h1 class="page-title">{title}</h1>
+        <div class="prose">
+          <p>{lede}</p>
+        </div>
+        <p class="more"><a href="/paintings">View the paintings</a></p>
+      </>
+    ) : (
+      <>
+        <h1 class="page-title reveal">{title}</h1>
+        <div class="hang">
+          {items.map((work, index) => (
+            <WorkCard
+              work={work}
+              sizes="(min-width: 1120px) 28vw, (min-width: 740px) 44vw, 92vw"
+              priority={index < 2}
+              delay={index % 3}
+            />
+          ))}
+        </div>
+      </>
+    )}
+  </article>
+</Base>

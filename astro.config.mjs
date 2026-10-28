@@ -5,12 +5,19 @@ import keystatic from '@keystatic/astro';
 import sitemap from '@astrojs/sitemap';
 
 const isDev = process.argv.includes('dev');
-const site = process.env.SITE_URL;
+const site = process.env.SITE_URL || 'https://gallery-hartaf.netlify.app';
 
 /** @type {import('astro').AstroIntegration[]} */
-const integrations = [];
-
-if (site) integrations.push(sitemap());
+const integrations = [
+  sitemap({
+    filter: (page) => {
+      const path = new URL(page).pathname.replace(/\/$/, '') || '/';
+      if (path === '/works') return false;
+      if (path.startsWith('/works/series')) return false;
+      return true;
+    },
+  }),
+];
 
 // Keystatic admin routes are server endpoints. They run during `astro dev`
 // and stay out of the static build Netlify publishes.

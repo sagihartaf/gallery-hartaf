@@ -8,6 +8,13 @@ const series = [
   { label: 'Portrait', value: 'portrait' },
 ];
 
+const categories = [
+  { label: 'Paintings', value: 'paintings' },
+  { label: 'Objects', value: 'objects' },
+  { label: 'Furniture', value: 'furniture' },
+  { label: 'Food', value: 'food' },
+];
+
 export default config({
   storage: { kind: 'local' },
   ui: {
@@ -22,7 +29,7 @@ export default config({
       format: 'yaml',
       entryLayout: 'form',
       previewUrl: '/works/{slug}',
-      columns: ['series', 'medium'],
+      columns: ['category', 'series', 'medium'],
       schema: {
         title: fields.slug({
           name: {
@@ -40,21 +47,27 @@ export default config({
           description: 'As it should be printed, in centimetres. Example: 80 × 120 cm',
           validation: { isRequired: true },
         }),
+        category: fields.select({
+          label: 'Category',
+          options: categories,
+          defaultValue: 'paintings',
+          description: 'Paintings, Objects, Furniture, or Food.',
+        }),
         series: fields.select({
           label: 'Series',
           options: series,
           defaultValue: 'abstract',
-          description: 'Choose the group this painting belongs to.',
+          description: 'Shown as a filter on Paintings. Not used for Objects, Furniture, or Food.',
         }),
         featured: fields.checkbox({
           label: 'Show on the home page',
           defaultValue: false,
-          description: 'Adds the painting to Selected works.',
+          description: 'Adds a painting to Selected works. Has no effect on other categories.',
         }),
         hero: fields.checkbox({
-          label: 'Use as the home page hero',
+          label: 'Use for the home share image',
           defaultValue: false,
-          description: 'The large painting at the top of the home page. Choose one.',
+          description: 'The painting used when the home page is shared. Choose one. The home page cycles through every painting.',
         }),
         order: fields.integer({
           label: 'Sort order',

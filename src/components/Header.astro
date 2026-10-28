@@ -1,19 +1,35 @@
 ---
 import Wordmark from './Wordmark.astro';
 import { enquireHref } from '../lib/contact';
+import { categories, type CategoryId } from '../lib/categories';
 
+interface Props {
+  section?: CategoryId | 'about' | 'contact';
+}
+
+const { section } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isHome = path === '/';
 
-function current(href: string) {
-  if (href === '/works') return path === '/works' || path.startsWith('/works/');
-  return path === href;
-}
+const resolved =
+  section ??
+  (path.startsWith('/paintings')
+    ? 'paintings'
+    : path.startsWith('/objects')
+      ? 'objects'
+      : path.startsWith('/furniture')
+        ? 'furniture'
+        : path.startsWith('/food')
+          ? 'food'
+          : path.startsWith('/about')
+            ? 'about'
+            : path.startsWith('/contact')
+              ? 'contact'
+              : undefined);
 
-const links = [
-  { href: '/works', label: 'Works' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+const studio = [
+  { href: '/about', id: 'about', label: 'About' },
+  { href: '/contact', id: 'contact', label: 'Contact' },
 ];
 ---
 
@@ -25,12 +41,28 @@ const links = [
       <p class="brand"><Wordmark /></p>
     )}
     <nav class="nav" aria-label="Primary">
-      {links.map((link) => (
-        <a href={link.href} aria-current={current(link.href) ? 'page' : undefined}>
-          {link.label}
-        </a>
-      ))}
+      <div class="nav-set">
+        {categories.map((category) => (
+          <a href={category.path} aria-current={resolved === category.id ? 'page' : undefined}>
+            {category.label}
+          </a>
+        ))}
+      </div>
+      <div class="nav-set nav-set-quiet">
+        {studio.map((link) => (
+          <a href={link.href} aria-current={resolved === link.id ? 'page' : undefined}>
+            {link.label}
+          </a>
+        ))}
+      </div>
     </nav>
     <a class="enquire" href={enquireHref()}>Enquire</a>
   </div>
 </header>
+<script is:inline>
+  (function () {
+    var header = document.querySelector('.site-header');
+    if (!header) return;
+    document.documentElement.style.setProperty('--header', header.offsetHeight + 'px');
+  })();
+</script>

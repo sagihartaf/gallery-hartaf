@@ -1,63 +1,132 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
+import { artistStatement } from '../content/artist-statement';
+import { aboutJsonLd } from '../lib/seo';
 import atWork from '../assets/studio/at-work.jpg';
 import bright from '../assets/studio/bright-and-breezy.jpg';
 import oil from '../assets/studio/oil-and-canvas.jpg';
 import motion from '../assets/studio/in-motion.jpg';
 
-const photos = [
-  {
-    src: atWork,
-    caption: 'At work, southern Israel',
-    alt: 'Shmuel Hartaf painting a canvas laid on a table, southern Israel',
-  },
-  {
-    src: bright,
-    caption: 'Bright and breezy, southern Israel',
-    alt: 'A palette knife held above a painting in progress, southern Israel',
-  },
-  {
-    src: oil,
-    caption: 'Oil and canvas, southern Israel',
-    alt: 'Shmuel Hartaf working on a canvas outdoors, with paint bottles in front, southern Israel',
-  },
-  {
-    src: motion,
-    caption: 'In motion, southern Israel',
-    alt: 'Shmuel Hartaf painting under a balcony, southern Israel',
-  },
-];
+const videos = import.meta.glob('../assets/studio/studio.{mp4,webm}', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+});
+const studioVideo = Object.values(videos)[0] as string | undefined;
 
 const description =
   'Shmuel Hartaf paints in southern Israel. Oil, acrylic, and mixed media: harbours, machines, cities, and abstracts.';
+const jsonLd = Astro.site ? aboutJsonLd(Astro.site, description) : undefined;
 ---
 
-<Base title="About — Gallery Hartaf" description={description} ogImage={atWork}>
-  <article class="page">
-    <h1 class="page-title">Shmuel Hartaf</h1>
-    <div class="prose">
-      <p>
-        Shmuel Hartaf paints in southern Israel. He works in oil, acrylic, and mixed media:
-        harbours and boats, machines, cities, and large abstract canvases.
+<Base
+  title="Shmuel Hartaf — Gallery Hartaf"
+  description={description}
+  ogImage="/og/home.jpg"
+  ogAlt="Shmuel Hartaf at work in the studio"
+  section="about"
+  jsonLd={jsonLd}
+>
+  <article>
+    <header class="about-open">
+      <p class="kicker">The artist</p>
+      <h1 class="page-title">Shmuel Hartaf</h1>
+      <p class="about-lead">
+        Shmuel Hartaf paints in southern Israel. Oil, acrylic, and mixed media: harbours,
+        machines, cities, portraits, and large abstract canvases.
       </p>
-      <p>
-        The paintings are on the <a href="/works">works</a> page. To ask about one,
-        <a href="/contact">write to the gallery</a>.
-      </p>
-    </div>
-    <div class="studio">
-      {photos.map((photo) => (
-        <figure class="reveal">
+    </header>
+
+    <section class="about-pair">
+      <figure class="reveal">
+        <span class="media about-frame" data-parallax="1.25">
           <Image
-            src={photo.src}
-            alt={photo.alt}
+            src={atWork}
+            alt="Shmuel Hartaf, in profile, working a painting with a palette knife"
             widths={[640, 960, 1280, 1600]}
-            sizes="(min-width: 800px) 46rem, 92vw"
+            sizes="(min-width: 900px) 46rem, 92vw"
           />
-          <figcaption>{photo.caption}</figcaption>
-        </figure>
-      ))}
-    </div>
+        </span>
+        <figcaption>At work, southern Israel</figcaption>
+      </figure>
+      <div class="about-copy reveal" style="--d: 1">
+        <h2>Artist statement</h2>
+        {artistStatement.placeholder && (
+          <p class="statement-note">Placeholder. These lines stand in until the artist’s own words are added.</p>
+        )}
+        <div class="statement">
+          {artistStatement.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="about-pair is-flip">
+      <figure class="reveal" style="--d: 1">
+        <span class="media about-frame" data-parallax="1.1">
+          <Image
+            src={bright}
+            alt="A palette knife held above a painting in progress"
+            widths={[640, 960, 1280, 1800]}
+            sizes="(min-width: 900px) 52rem, 92vw"
+          />
+        </span>
+        <figcaption>Bright and breezy, southern Israel</figcaption>
+      </figure>
+      <div class="about-copy reveal">
+        <p>
+          The paintings are listed with their medium and size.
+          For a work, or a question, write to the studio.
+        </p>
+        <p class="about-links">
+          <a href="/paintings">The paintings</a>
+          <a href="/contact">Contact</a>
+        </p>
+      </div>
+    </section>
+
+    {studioVideo && (
+      <section class="about-video reveal">
+        <h2>Studio</h2>
+        <video controls playsinline preload="metadata" src={studioVideo}>
+          A short film from the studio.
+        </video>
+      </section>
+    )}
+
+    <section class="about-pair">
+      <figure class="reveal">
+        <span class="media about-frame" data-parallax="1.15">
+          <Image
+            src={oil}
+            alt="Shmuel Hartaf standing beside a canvas, palette knife in hand"
+            widths={[640, 960, 1280, 1600]}
+            sizes="(min-width: 900px) 46rem, 92vw"
+          />
+        </span>
+        <figcaption>Oil and canvas, southern Israel</figcaption>
+      </figure>
+      <div class="about-copy reveal" style="--d: 1">
+        <p>Oil and canvas, in the open air of the studio in southern Israel.</p>
+      </div>
+    </section>
+
+    <section class="about-pair is-flip">
+      <figure class="reveal">
+        <span class="media about-frame" data-parallax="1.2">
+          <Image
+            src={motion}
+            alt="Shmuel Hartaf moving a palette knife across a painting"
+            widths={[640, 960, 1280, 1600]}
+            sizes="(min-width: 900px) 46rem, 92vw"
+          />
+        </span>
+        <figcaption>In motion, southern Israel</figcaption>
+      </figure>
+      <div class="about-copy reveal" style="--d: 1">
+        <p>The same studio, a moment later.</p>
+        <p class="about-links"><a href="/paintings">View the paintings</a></p>
+      </div>
+    </section>
   </article>
 </Base>

@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import type { CategoryId } from './categories';
 
 export type Work = CollectionEntry<'artworks'>;
 
@@ -7,6 +8,11 @@ export async function getWorks() {
   return works.sort(
     (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
   );
+}
+
+export async function getByCategory(category: CategoryId) {
+  const works = await getWorks();
+  return works.filter((work) => work.data.category === category);
 }
 
 export function workPath(work: Work) {

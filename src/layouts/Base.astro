@@ -7,25 +7,25 @@ import '@fontsource/jost/latin-400.css';
 import '@fontsource/jost/latin-500.css';
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
-import { getImage } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+import type { CategoryId } from '../lib/categories';
 
 interface Props {
   title: string;
   description: string;
-  ogImage?: ImageMetadata;
+  ogImage?: string;
+  ogAlt?: string;
+  section?: CategoryId | 'about' | 'contact';
+  whatsappTitle?: string;
+  jsonLd?: unknown;
 }
 
-const { title, description, ogImage } = Astro.props;
+const { title, description, ogImage = '/og/home.jpg', ogAlt, section, whatsappTitle, jsonLd } = Astro.props;
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
-
-let ogSrc: string | undefined;
-if (ogImage && Astro.site) {
-  const rendered = await getImage({ src: ogImage, width: 1200, format: 'jpg' });
-  ogSrc = new URL(rendered.src, Astro.site).href;
-}
+const ogSrc = Astro.site ? new URL(ogImage, Astro.site).href : ogImage;
+const json = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : undefined;
 ---
 
 <!doctype html>
@@ -46,23 +46,39 @@ if (ogImage && Astro.site) {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Gallery Hartaf" />
-    {ogSrc && <meta property="og:image" content={ogSrc} />}
-    {ogSrc && <meta name="twitter:card" content="summary_large_image" />}
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={ogSrc} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {ogAlt && <meta property="og:image:alt" content={ogAlt} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogSrc} />
+    {ogAlt && <meta name="twitter:image:alt" content={ogAlt} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {json && <script type="application/ld+json" set:html={json} />}
     <ClientRouter />
   </head>
   <body>
     <a class="skip" href="#content">Skip to content</a>
-    <Header />
+    <Header section={section} />
     <main id="content">
       <slot />
     </main>
     <Footer />
+    <WhatsAppFloat title={whatsappTitle} />
     <script>
       const root = document.documentElement;
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
       let revealObserver: IntersectionObserver | undefined;
+
+      function measureHeader() {
+        const header = document.querySelector('.site-header');
+        if (!header) return;
+        root.style.setProperty('--header', `${header.getBoundingClientRect().height}px`);
+      }
 
       function armReveals() {
         revealObserver?.disconnect();
@@ -94,47 +110,43 @@ if (ogImage && Astro.site) {
         });
       }
 
-      function playHero() {
-        const hero = document.querySelector('[data-hero]');
-        if (!hero || reduce) return;
-        hero.classList.add('is-entering');
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => hero.classList.add('is-settled'));
-        });
-      }
-
       function bindParallax() {
-        if (root.dataset.parallax || reduce || !finePointer) return;
-        root.dataset.parallax = 'on';
+        if (reduce || !finePointer) return;
         let frame = 0;
         const update = () => {
           frame = 0;
           const height = window.innerHeight || 1;
           document.querySelectorAll<HTMLElement>('[data-parallax]').forEach((node) => {
+            const raw = Number(node.dataset.parallax);
+            const depth = Number.isFinite(raw) && raw !== 0 ? raw : 1;
             const box = node.getBoundingClientRect();
             const progress = (box.top + box.height / 2 - height / 2) / height;
-            const shift = Math.max(-1, Math.min(1, progress)) * -18;
+            const shift = Math.max(-1, Math.min(1, progress)) * -16 * depth;
             node.style.transform = `translate3d(0, ${shift.toFixed(2)}px, 0)`;
           });
         };
-        window.addEventListener(
-          'scroll',
-          () => {
-            if (!frame) frame = requestAnimationFrame(update);
-          },
-          { passive: true },
-        );
+        if (!root.dataset.parallaxBound) {
+          root.dataset.parallaxBound = 'on';
+          window.addEventListener(
+            'scroll',
+            () => {
+              if (!frame) frame = requestAnimationFrame(update);
+            },
+            { passive: true },
+          );
+        }
         update();
       }
 
       if (!root.dataset.walkKeys) {
         root.dataset.walkKeys = 'on';
         const onPage = () => {
+          measureHeader();
           armReveals();
-          playHero();
           bindParallax();
         };
         document.addEventListener('astro:page-load', onPage);
+        window.addEventListener('resize', measureHeader);
         onPage();
         document.addEventListener('keydown', (event) => {
           if (event.metaKey || event.ctrlKey || event.altKey) return;
