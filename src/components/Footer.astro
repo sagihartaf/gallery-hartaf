@@ -1,0 +1,16 @@
+---
+import Wordmark from './Wordmark.astro';
+import { enquireHref, gallery } from '../lib/contact';
+---
+
+<footer class="site-footer">
+  <div class="frame footer-bar">
+    <Wordmark />
+    <a class="footer-mail" href={enquireHref()}>{gallery.email}</a>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="/works">Works</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+    </nav>
+  </div>
+</footer>

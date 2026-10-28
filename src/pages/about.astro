@@ -1,0 +1,63 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import atWork from '../assets/studio/at-work.jpg';
+import bright from '../assets/studio/bright-and-breezy.jpg';
+import oil from '../assets/studio/oil-and-canvas.jpg';
+import motion from '../assets/studio/in-motion.jpg';
+
+const photos = [
+  {
+    src: atWork,
+    caption: 'At work, southern Israel',
+    alt: 'Shmuel Hartaf painting a canvas laid on a table, southern Israel',
+  },
+  {
+    src: bright,
+    caption: 'Bright and breezy, southern Israel',
+    alt: 'A palette knife held above a painting in progress, southern Israel',
+  },
+  {
+    src: oil,
+    caption: 'Oil and canvas, southern Israel',
+    alt: 'Shmuel Hartaf working on a canvas outdoors, with paint bottles in front, southern Israel',
+  },
+  {
+    src: motion,
+    caption: 'In motion, southern Israel',
+    alt: 'Shmuel Hartaf painting under a balcony, southern Israel',
+  },
+];
+
+const description =
+  'Shmuel Hartaf paints in southern Israel. Oil, acrylic, and mixed media: harbours, machines, cities, and abstracts.';
+---
+
+<Base title="About — Gallery Hartaf" description={description} ogImage={atWork}>
+  <article class="page">
+    <h1 class="page-title">Shmuel Hartaf</h1>
+    <div class="prose">
+      <p>
+        Shmuel Hartaf paints in southern Israel. He works in oil, acrylic, and mixed media:
+        harbours and boats, machines, cities, and large abstract canvases.
+      </p>
+      <p>
+        The paintings are on the <a href="/works">works</a> page. To ask about one,
+        <a href="/contact">write to the gallery</a>.
+      </p>
+    </div>
+    <div class="studio">
+      {photos.map((photo) => (
+        <figure>
+          <Image
+            src={photo.src}
+            alt={photo.alt}
+            widths={[640, 960, 1280, 1600]}
+            sizes="(min-width: 800px) 46rem, 92vw"
+          />
+          <figcaption>{photo.caption}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </article>
+</Base>

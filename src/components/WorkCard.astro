@@ -1,0 +1,30 @@
+---
+import { Image } from 'astro:assets';
+import type { Work } from '../lib/works';
+import { workPath } from '../lib/works';
+
+interface Props {
+  work: Work;
+  sizes: string;
+  priority?: boolean;
+}
+
+const { work, sizes, priority = false } = Astro.props;
+const label = `${work.data.medium}, ${work.data.size}`;
+---
+
+<a class="card" href={workPath(work)}>
+  <Image
+    src={work.data.image}
+    alt=""
+    widths={[480, 720, 960, 1280, 1600]}
+    sizes={sizes}
+    class="card-img"
+    transition:name={`work-${work.id}`}
+    priority={priority}
+  />
+  <span class="card-text">
+    <span class="card-title">{work.data.title}</span>
+    <span class="card-meta">{label}</span>
+  </span>
+</a>

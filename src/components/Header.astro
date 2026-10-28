@@ -1,0 +1,36 @@
+---
+import Wordmark from './Wordmark.astro';
+import { enquireHref } from '../lib/contact';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isHome = path === '/';
+
+function current(href: string) {
+  if (href === '/works') return path === '/works' || path.startsWith('/works/');
+  return path === href;
+}
+
+const links = [
+  { href: '/works', label: 'Works' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+---
+
+<header class="site-header">
+  <div class="frame header-bar">
+    {isHome ? (
+      <h1 class="brand"><Wordmark /></h1>
+    ) : (
+      <p class="brand"><Wordmark /></p>
+    )}
+    <nav class="nav" aria-label="Primary">
+      {links.map((link) => (
+        <a href={link.href} aria-current={current(link.href) ? 'page' : undefined}>
+          {link.label}
+        </a>
+      ))}
+    </nav>
+    <a class="enquire" href={enquireHref()}>Enquire</a>
+  </div>
+</header>

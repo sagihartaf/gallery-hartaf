@@ -1,0 +1,11 @@
+---
+interface Props {
+  href?: string;
+}
+const { href = '/' } = Astro.props;
+---
+
+<a class="wordmark" href={href}>
+  <span>G<em>all</em>ery</span>
+  <span>H<em>art</em>af</span>
+</a>

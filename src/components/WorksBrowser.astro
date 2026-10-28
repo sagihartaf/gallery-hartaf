@@ -1,0 +1,50 @@
+---
+import WorkCard from './WorkCard.astro';
+import { getWorks } from '../lib/works';
+import { seriesList, seriesLabel, type SeriesId } from '../lib/series';
+
+interface Props {
+  active?: SeriesId | null;
+}
+
+const { active = null } = Astro.props;
+const works = await getWorks();
+const visible = active ? works.filter((work) => work.data.series === active) : works;
+const label = active ? seriesLabel(active) : null;
+---
+
+<div class="page">
+  <h1 class="page-title">{label ?? 'Works'}</h1>
+  <nav aria-label="Series">
+    <ul class="filters">
+      <li>
+        <a href="/works" aria-current={active ? undefined : 'page'}>All</a>
+      </li>
+      {seriesList.map((series) => (
+        <li>
+          <a
+            href={`/works/series/${series.id}`}
+            aria-current={active === series.id ? 'page' : undefined}
+          >
+            {series.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+  {visible.length === 0 ? (
+    <p class="empty">
+      No paintings in this series yet. <a href="/works">All works</a>
+    </p>
+  ) : (
+    <div class="hang">
+      {visible.map((work, index) => (
+        <WorkCard
+          work={work}
+          sizes="(min-width: 1120px) 28vw, (min-width: 740px) 44vw, 92vw"
+          priority={index < 2}
+        />
+      ))}
+    </div>
+  )}
+</div>
