@@ -3,6 +3,21 @@ import type { CategoryId } from './categories';
 
 export type Work = CollectionEntry<'artworks'>;
 
+const categoryNoun: Record<CategoryId, string> = {
+  paintings: 'painting',
+  objects: 'object',
+  furniture: 'furniture piece',
+  food: 'food work',
+};
+
+export function workAlt(work: Work, options?: { detail?: boolean }) {
+  const alt = `${work.data.title}, ${categoryNoun[work.data.category]} by Shmuel Hartaf`;
+  if (options?.detail) {
+    return `${alt}. ${work.data.medium}, ${work.data.size}.`;
+  }
+  return alt;
+}
+
 export async function getWorks() {
   const works = await getCollection('artworks');
   return works.sort(

@@ -1,7 +1,7 @@
 ---
 import { getImage } from 'astro:assets';
 import type { Work } from '../lib/works';
-import { workPath } from '../lib/works';
+import { workAlt, workPath } from '../lib/works';
 
 interface Props {
   works: Work[];
@@ -45,7 +45,7 @@ const slides = await Promise.all(
             <span class="slide-canvas">
               <img
                 class="slide-img"
-                alt=""
+                alt={workAlt(slide.work)}
                 width={slide.width}
                 height={slide.height}
                 sizes="(min-width: 900px) 82vw, 92vw"
@@ -84,7 +84,7 @@ const slides = await Promise.all(
       </button>
     </div>
     <div class="stage-progress" aria-hidden="true"><span data-progress></span></div>
-    <p class="visually-hidden" data-live></p>
+    <p class="visually-hidden" data-live aria-live="polite" aria-atomic="true"></p>
   </section>
 ) : (
   <div class="page">

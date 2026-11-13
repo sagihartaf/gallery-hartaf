@@ -4,7 +4,7 @@ import type { ImageMetadata } from 'astro';
 import { getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import WallView from '../../components/WallView.astro';
-import { getWorks, neighbours, workPath } from '../../lib/works';
+import { getWorks, neighbours, workAlt, workPath } from '../../lib/works';
 import { categoryLabel } from '../../lib/categories';
 import { seriesLabel } from '../../lib/series';
 import { canvasCentimetres } from '../../lib/dimensions';
@@ -77,7 +77,7 @@ const jsonLd = Astro.site
             <span class="media work-frame" data-parallax>
               <Image
                 src={work.data.image}
-                alt={`${work.data.title}. ${work.data.medium}, ${work.data.size}.`}
+                alt={workAlt(work, { detail: true })}
                 widths={[640, 960, 1280, 1800, 2400]}
                 sizes="(min-width: 900px) 68vw, 94vw"
                 class="work-img"
@@ -90,7 +90,7 @@ const jsonLd = Astro.site
             <div class="panel-wall">
               <WallView
                 src={work.data.image as ImageMetadata}
-                title={work.data.title}
+                alt={`${workAlt(work)} shown at scale on a gallery wall`}
                 widthCm={cm.width}
                 heightCm={cm.height}
               />
