@@ -24,7 +24,7 @@ The site is at [http://127.0.0.1:4387](http://127.0.0.1:4387).
 | `/works/bmw-engine` | One work, with the previous and the next |
 | `/about` | The artist, a statement, and the studio |
 | `/contact` | Email and WhatsApp |
-| `/keystatic` | Admin, only while `npm run dev` is running |
+| `/keystatic` | Admin, only while `npm run dev` or `npm run admin` is running |
 
 ```sh
 npm run build
@@ -39,7 +39,7 @@ There are no prices on the site. Leave them out of the text.
 
 ### With the form
 
-1. Run `npm run dev`.
+1. Run `npm run admin` (or `npm run dev`).
 2. Open [http://127.0.0.1:4387/keystatic](http://127.0.0.1:4387/keystatic).
 3. Open **Artworks**, then **Add**.
 4. Fill in the title, medium, size, series, and sort order, and upload a photograph of the whole painting.
@@ -89,9 +89,9 @@ WhatsApp uses `054 707 3333` (`https://wa.me/972547073333`). A small button sits
 
 ## Deploy on Netlify
 
-`netlify.toml` already sets the build command to `npm run build`, the publish directory to `dist`, and Node to 22.
+`netlify.toml` sets the build command to `npm run build`, the publish directory to `dist`, Node to 22, and `SITE_URL` to `https://hrtf.co.il`. Pushing to `main` auto-deploys the Netlify site `gallery-hartaf` to [https://hrtf.co.il](https://hrtf.co.il).
 
-The public site URL is `https://gallery-hartaf.netlify.app`. Set `SITE_URL` only if the domain changes. The build writes a sitemap, canonical links, and a 1200×630 share image for the home page and for every work.
+The public site URL defaults to `https://hrtf.co.il` in `astro.config.mjs`. Set `SITE_URL` only if the domain changes. The build writes a sitemap, canonical links, and a 1200×630 share image for the home page and for every work.
 
 `/works` redirects to `/paintings`. A series address such as `/works/series/machines` redirects to `/paintings/series/machines`. A single work stays at `/works/{slug}`.
 

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gallery-hartaf.netlify.app/sitemap-index.xml
+Sitemap: https://hrtf.co.il/sitemap-index.xml

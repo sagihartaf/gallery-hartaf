@@ -5,7 +5,7 @@ import keystatic from '@keystatic/astro';
 import sitemap from '@astrojs/sitemap';
 
 const isDev = process.argv.includes('dev');
-const site = process.env.SITE_URL || 'https://gallery-hartaf.netlify.app';
+const site = process.env.SITE_URL || 'https://hrtf.co.il';
 
 /** @type {import('astro').AstroIntegration[]} */
 const integrations = [

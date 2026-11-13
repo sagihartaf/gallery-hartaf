@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "admin": "astro dev",
     "build": "node scripts/generate-og.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro"

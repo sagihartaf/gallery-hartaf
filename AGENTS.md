@@ -1,3 +1,7 @@
+## Site
+
+The live site is https://hrtf.co.il. That origin is the default in `astro.config.mjs` and `SITE_URL` in `netlify.toml`. Canonical links, Open Graph, JSON-LD, `public/robots.txt`, and the sitemap follow it. Do not point them back at the old Netlify subdomain.
+
 ## Development
 
 When starting the dev server, use background mode:

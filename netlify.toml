@@ -4,8 +4,8 @@
 
 [build.environment]
   NODE_VERSION = "22"
-  # Optional. The site URL defaults to https://gallery-hartaf.netlify.app.
-  # SITE_URL = "https://gallery-hartaf.netlify.app"
+  # Public origin for canonical links, Open Graph, JSON-LD, and the sitemap.
+  SITE_URL = "https://hrtf.co.il"
 
 [[redirects]]
   from = "/works"
