@@ -6,4 +6,5 @@ series: cities
 featured: false
 hero: false
 order: 33
+priceUsd: 2500
 image: ../../assets/artworks/red-tower/image.jpg

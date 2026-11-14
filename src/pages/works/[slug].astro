@@ -4,7 +4,7 @@ import type { ImageMetadata } from 'astro';
 import { getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import WallView from '../../components/WallView.astro';
-import { getWorks, neighbours, workAlt, workPath } from '../../lib/works';
+import { getWorks, neighbours, workAlt, workPath, workPriceLabel } from '../../lib/works';
 import { categoryLabel } from '../../lib/categories';
 import { seriesLabel } from '../../lib/series';
 import { canvasCentimetres } from '../../lib/dimensions';
@@ -33,6 +33,7 @@ const whatsapp = channels.find((channel) => channel.id === 'whatsapp');
 const description = `${work.data.title}. ${work.data.medium}, ${work.data.size}. A work by Shmuel Hartaf.`;
 const cm = canvasCentimetres(work.data.size, work.data.image.width, work.data.image.height);
 const isPainting = work.data.category === 'paintings';
+const price = workPriceLabel(work);
 const rendered = await getImage({ src: work.data.image, width: 1600, format: 'jpg' });
 const pageUrl = Astro.site ? new URL(workPath(work), Astro.site).href : workPath(work);
 const imageUrl = Astro.site ? new URL(rendered.src, Astro.site).href : rendered.src;
@@ -110,6 +111,12 @@ const jsonLd = Astro.site
             <dt>Size</dt>
             <dd>{work.data.size}</dd>
           </div>
+          {price && (
+            <div>
+              <dt>Price</dt>
+              <dd>{price}</dd>
+            </div>
+          )}
           {isPainting && (
             <div>
               <dt>Series</dt>

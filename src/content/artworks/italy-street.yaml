@@ -6,4 +6,5 @@ series: cities
 featured: false
 hero: false
 order: 17
+priceUsd: 5000
 image: ../../assets/artworks/italy-street/image.jpg

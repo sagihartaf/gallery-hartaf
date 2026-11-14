@@ -6,4 +6,5 @@ series: machines
 featured: false
 hero: false
 order: 15
+priceUsd: 2000
 image: ../../assets/artworks/last-engine/image.jpg

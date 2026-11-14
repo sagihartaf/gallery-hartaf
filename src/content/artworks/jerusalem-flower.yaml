@@ -6,4 +6,5 @@ series: cities
 featured: false
 hero: false
 order: 8
+priceUsd: 2000
 image: ../../assets/artworks/jerusalem-flower/image.jpg

@@ -16,6 +16,8 @@ const artworks = defineCollection({
       featured: z.boolean().default(false),
       hero: z.boolean().default(false),
       order: z.number().int(),
+      priceUsd: z.number().int().positive().optional(),
+      sold: z.boolean().default(false),
       image: image(),
     }),
 });

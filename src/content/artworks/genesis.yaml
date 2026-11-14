@@ -6,4 +6,5 @@ series: abstract
 featured: true
 hero: false
 order: 10
+priceUsd: 1000
 image: ../../assets/artworks/genesis/image.jpg
