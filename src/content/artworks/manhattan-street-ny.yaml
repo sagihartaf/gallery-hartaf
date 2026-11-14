@@ -6,4 +6,5 @@ series: cities
 featured: true
 hero: false
 order: 21
+priceUsd: 4000
 image: ../../assets/artworks/manhattan-street-ny/image.jpg

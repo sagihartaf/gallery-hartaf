@@ -23,7 +23,8 @@ Detail pages stay at `/works/<slug>`. Category indexes are `/paintings`, `/objec
 ## Rules
 
 - English only.
-- No prices anywhere. Enquiry is email and WhatsApp only.
+- Enquiry is email and WhatsApp only.
+- Prices live on the artwork record: optional `priceUsd` (an integer, shown as `$33,000`) and `sold: true` (shown as “Sold”). Do not invent a price. If neither field is set, the work has no public price and the site leaves that line blank.
 - Keep the original uncropped photographs in `originals/`. Do not delete or overwrite them.
 - Run `npm run build` before committing. It regenerates Open Graph images and `dist/`.
 

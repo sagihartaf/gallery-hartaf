@@ -35,14 +35,14 @@ npm run preview
 
 ## Add a work
 
-There are no prices on the site. Leave them out of the text.
+An optional public price lives on the artwork record. Set `priceUsd` to a whole number of US dollars (the site shows it as `$33,000`), or set `sold: true` to show “Sold”. Leave both off if the work has no public price. Do not invent a figure.
 
 ### With the form
 
 1. Run `npm run admin` (or `npm run dev`).
 2. Open [http://127.0.0.1:4387/keystatic](http://127.0.0.1:4387/keystatic).
 3. Open **Artworks**, then **Add**.
-4. Fill in the title, medium, size, series, and sort order, and upload a photograph of the whole painting.
+4. Fill in the title, medium, size, series, and sort order, and upload a photograph of the whole painting. Add a price in US dollars, or mark the work as sold. Leave the price empty if it should stay off the site.
 5. Choose a **Category**: Paintings, Objects, Furniture, or Food. For a painting, also choose a series. Tick **Show on the home page** to include a painting in Selected works. Tick **Use for the home share image** for the picture used when the home page is shared. Keep a single share image.
 6. Save.
 
@@ -66,8 +66,11 @@ series: abstract
 featured: false
 hero: false
 order: 30
+priceUsd: 2000
 image: ../../assets/artworks/my-painting/image.jpg
 ```
+
+`priceUsd` is the public price in US dollars. Omit it when there is no public price. For a sold work, write `sold: true` instead of a price.
 
 Put the photograph at `src/assets/artworks/my-painting/image.jpg`. The path in the YAML has to stay in that shape, or the admin cannot find the file later.
 

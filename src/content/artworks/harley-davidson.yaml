@@ -6,4 +6,5 @@ series: machines
 featured: true
 hero: false
 order: 16
+priceUsd: 3000
 image: ../../assets/artworks/harley-davidson/image.jpg

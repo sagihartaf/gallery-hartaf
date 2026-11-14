@@ -41,3 +41,10 @@ export function neighbours(works: Work[], id: string) {
   const next = works[(index + 1) % works.length];
   return { prev, next };
 }
+
+export function workPriceLabel(work: Work): string | null {
+  if (work.data.sold) return 'Sold';
+  if (work.data.priceUsd == null) return null;
+  return `$${work.data.priceUsd.toLocaleString('en-US')}`;
+}
+

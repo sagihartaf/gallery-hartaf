@@ -6,4 +6,5 @@ series: portrait
 featured: true
 hero: false
 order: 23
+sold: true
 image: ../../assets/artworks/father-portrait/image.jpg

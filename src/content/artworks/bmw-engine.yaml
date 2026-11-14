@@ -6,4 +6,5 @@ series: machines
 featured: false
 hero: true
 order: 5
+priceUsd: 5000
 image: ../../assets/artworks/bmw-engine/image.jpg

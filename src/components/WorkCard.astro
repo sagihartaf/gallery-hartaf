@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import type { Work } from '../lib/works';
-import { workAlt, workPath } from '../lib/works';
+import { workAlt, workPath, workPriceLabel } from '../lib/works';
 
 interface Props {
   work: Work;
@@ -12,6 +12,7 @@ interface Props {
 
 const { work, sizes, priority = false, delay = 0 } = Astro.props;
 const label = `${work.data.medium}, ${work.data.size}`;
+const price = workPriceLabel(work);
 ---
 
 <a class="card reveal" href={workPath(work)} style={`--d: ${delay}`}>
@@ -29,5 +30,6 @@ const label = `${work.data.medium}, ${work.data.size}`;
   <span class="card-text">
     <span class="card-title">{work.data.title}</span>
     <span class="card-meta">{label}</span>
+    {price && <span class="card-price">{price}</span>}
   </span>
 </a>

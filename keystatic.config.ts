@@ -75,6 +75,16 @@ export default config({
           description: 'Lower numbers appear first.',
           validation: { isRequired: true, min: 0 },
         }),
+        priceUsd: fields.integer({
+          label: 'Price (USD)',
+          description: 'Public price in US dollars, without a currency symbol. Leave empty if the work has no public price, or if it is sold.',
+          validation: { min: 1 },
+        }),
+        sold: fields.checkbox({
+          label: 'Sold',
+          defaultValue: false,
+          description: 'Shows “Sold” in place of a price.',
+        }),
         image: fields.image({
           label: 'Photograph',
           description: 'A clear photograph of the whole painting.',

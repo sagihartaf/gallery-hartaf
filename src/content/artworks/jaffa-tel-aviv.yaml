@@ -6,4 +6,5 @@ series: cities
 featured: false
 hero: false
 order: 34
+priceUsd: 500
 image: ../../assets/artworks/jaffa-tel-aviv/image.jpg
